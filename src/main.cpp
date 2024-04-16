@@ -1,9 +1,13 @@
 #include <Arduino.h>
 #include <Wifi.h>
 #include <HTTPclient.h>
+#include "dht11.h"
 
 void initWiFi(String ssid, String password) {
+  // Enable station mode (wifi client) and disconnect from previous
   WiFi.mode(WIFI_STA);
+  WiFi.disconnect();
+  delay(100);
   WiFi.begin(ssid, password);
   Serial.print("Connecting to WiFi ..");
   //25s to connect
@@ -34,12 +38,10 @@ void sendJson(String serverPath, String jsonData){
 
 void setup() {
   Serial.begin(9600);
-  // Enable station mode (wifi client) and disconnect from previous
-  WiFi.mode(WIFI_STA);
-  WiFi.disconnect();
-  delay(100);
+  
 
   Serial.println("Setup done");
+  //enter wifi details.
   initWiFi("ssid", "password");
 }
 
