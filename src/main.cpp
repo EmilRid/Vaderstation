@@ -48,6 +48,9 @@ void setup() {
 void loop() {
   String serverName = "http://172.0.0.1:1880/";
   String testData = "{\"temp\":\"23\",\"humidity\":\"19\"}";
-  sendJson(serverName, testData);
+  if(WiFi.status() == WL_CONNECTED){
+    sendJson(serverName, testData);
+  }
+  
   delay(10000);
 }
