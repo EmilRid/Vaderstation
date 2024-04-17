@@ -56,7 +56,7 @@ void setup() {
 }
 
 void loop() {
-  String serverName = "http://172.20.10.9:1880/";
+  String serverName = "http://localhost/json";
   
   readSensor();
   char str[20];
@@ -66,6 +66,9 @@ void loop() {
   Serial.println(str);
   sprintf(str, "PT:%d", getPercievedTemp());
   Serial.println(str);
+  delay(1000);
+  Serial.println(bmp.readAltitude());
+  Serial.println(bmp.readPressure());
   delay(10000);
 
   char testData[200];
