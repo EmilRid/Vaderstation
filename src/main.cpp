@@ -2,6 +2,9 @@
 #include <Wifi.h>
 #include <HTTPclient.h>
 #include "dht11.h"
+#include <Adafruit_BMP085.h>
+
+Adafruit_BMP085 bmp;
 
 void initWiFi(String ssid, String password) {
   // Enable station mode (wifi client) and disconnect from previous
@@ -40,9 +43,16 @@ void setup() {
   Serial.begin(9600);
   setupDHT();
 
+  if (!bmp.begin()) {
+	  Serial.println("Could not find a valid BMP085/BMP180 sensor, check wiring!");
+	}
+  else{
+    Serial.println("BMP found!");
+  }
+
   Serial.println("Setup done");
   //enter wifi details.
-  initWiFi("ssid", "password");
+  initWiFi("Hugos iPhone", "hugowifi12333");
 }
 
 void loop() {
