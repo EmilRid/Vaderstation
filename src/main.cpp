@@ -11,7 +11,7 @@ void initWiFi(String ssid, String password) {
   WiFi.begin(ssid, password);
   Serial.print("Connecting to WiFi ..");
   //25s to connect
-  for(int i=0; i<25; i++){
+  for(int i=0; i<2; i++){
     if(WiFi.status() != WL_CONNECTED) {
       Serial.print('.');
       delay(1000);
@@ -38,7 +38,7 @@ void sendJson(String serverPath, String jsonData){
 
 void setup() {
   Serial.begin(9600);
-  
+  setupDHT();
 
   Serial.println("Setup done");
   //enter wifi details.
@@ -46,11 +46,21 @@ void setup() {
 }
 
 void loop() {
-  String serverName = "http://172.0.0.1:1880/";
-  String testData = "{\"temp\":\"23\",\"humidity\":\"19\"}";
+  String serverName = "http://172.20.10.9:1880/";
+  
+  readSensor();
+  char str[20];
+  sprintf(str, "T:%d", getTemp());
+  Serial.println(str);
+  sprintf(str, "H:%d", getHumidity());
+  Serial.println(str);
+  sprintf(str, "PT:%d", getPercievedTemp());
+  Serial.println(str);
+  delay(10000);
+
+  char testData[200];
+  sprintf(testData, "{\"date\":\"1970-01-01T00:00:00Z\",\"temp\":\"%d\",\"humidity\":\"%d\",\"percievedTemp\":\"%d\"}", getTemp(), getHumidity(), getPercievedTemp());
   if(WiFi.status() == WL_CONNECTED){
     sendJson(serverName, testData);
   }
-  
-  delay(10000);
 }

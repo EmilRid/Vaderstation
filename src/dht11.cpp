@@ -13,7 +13,7 @@ int humidity = -1;
 void setupDHT(){
     dht.begin();
 }
-
+//changeme, bad name
 void readSensor(){
     temp = dht.readTemperature();
     humidity = dht.readHumidity();
