@@ -68,20 +68,26 @@ void loop() {
   sprintf(str, "Percieved Temp: %d", getPercievedTemp());
   Serial.println(str);
   delay(1000);
-  int tempValue = bmp.readAltitude(101502);
-  sprintf(str, "Altitude: %d", tempValue);
-  Serial.println(str);
-  tempValue = bmp.readPressure();
-  sprintf(str, "Preassure: %d", tempValue);
-  Serial.println(str);
-  tempValue = bmp.readTemperature();
-  sprintf(str, "BMP180 Temp: %d", tempValue);
-  Serial.println(str);
-  delay(10000);
-
   char testData[200];
-  sprintf(testData, "{\n\"date\":\"1970-01-01T00:00:00Z\",\n\"temp\":\"%d\",\n\"humidity\":\"%d\",\n\"percievedTemp\":\"%d\",\n\"preassure\":\"%d\",\n\"altitude\":\"%f\"\n}", getTemp(), getHumidity(), getPercievedTemp(), bmp.readPressure(), bmp.readAltitude(101502));
+  //this is bad. make new file for bmp reading that handles this instead
+  if(bmp.begin()){
+    int tempValue = bmp.readAltitude(101502);
+    sprintf(str, "Altitude: %d", tempValue);
+    Serial.println(str);
+    tempValue = bmp.readPressure();
+    sprintf(str, "Preassure: %d", tempValue);
+    Serial.println(str);
+    tempValue = bmp.readTemperature();
+    sprintf(str, "BMP180 Temp: %d", tempValue);
+    Serial.println(str);
+    sprintf(testData, "{\n\"date\":\"1970-01-01T00:00:00Z\",\n\"temp\":\"%d\",\n\"humidity\":\"%d\",\n\"percievedTemp\":\"%d\",\n\"preassure\":\"%d\",\n\"altitude\":\"%f\"\n}", getTemp(), getHumidity(), getPercievedTemp(), bmp.readPressure(), bmp.readAltitude(101502));
+  }
+  else{
+    sprintf(testData, "{\n\"date\":\"1970-01-01T00:00:00Z\",\n\"temp\":\"%d\",\n\"humidity\":\"%d\",\n\"percievedTemp\":\"%d\",\n\"preassure\":\"%d\",\n\"altitude\":\"%f\"\n}", getTemp(), getHumidity(), getPercievedTemp(), 0, 0);
+  }
+
   if(WiFi.status() == WL_CONNECTED){
     sendJson(serverName, testData);
   }
+  delay(10000);
 }
