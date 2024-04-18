@@ -5,9 +5,6 @@
 #include <Adafruit_BMP085.h>
 
 Adafruit_BMP085 bmp;
-#include <Adafruit_BMP085.h>
-
-Adafruit_BMP085 bmp;
 
 void initWiFi(String ssid, String password) {
   // Enable station mode (wifi client) and disconnect from previous
@@ -80,9 +77,6 @@ void loop() {
   tempValue = bmp.readTemperature();
   sprintf(str, "BMP180 Temp: %d", tempValue);
   Serial.println(str);
-  delay(1000);
-  Serial.println(bmp.readAltitude());
-  Serial.println(bmp.readPressure());
   delay(10000);
 
   char testData[200];
