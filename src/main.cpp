@@ -1,6 +1,6 @@
 #include <Arduino.h>
-#include <Wifi.h>
-#include <HTTPclient.h>
+#include <WiFi.h>
+#include <HTTPClient.h>
 #include "dht11.h"
 #include <Adafruit_BMP085.h>
 
