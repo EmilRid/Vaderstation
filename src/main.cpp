@@ -56,23 +56,31 @@ void setup() {
 }
 
 void loop() {
-  String serverName = "http://localhost/json";
+  String serverName = "http://localhost:8184/json";
   
   readSensor();
-  char str[20];
-  sprintf(str, "T:%d", getTemp());
+  Serial.println();
+  char str[50];
+  sprintf(str, "Temp: %d", getTemp());
   Serial.println(str);
-  sprintf(str, "H:%d", getHumidity());
+  sprintf(str, "Humidity :%d", getHumidity());
   Serial.println(str);
-  sprintf(str, "PT:%d", getPercievedTemp());
+  sprintf(str, "Percieved Temp: %d", getPercievedTemp());
   Serial.println(str);
   delay(1000);
-  Serial.println(bmp.readAltitude());
-  Serial.println(bmp.readPressure());
+  int tempValue = bmp.readAltitude(101502);
+  sprintf(str, "Altitude: %d", tempValue);
+  Serial.println(str);
+  tempValue = bmp.readPressure();
+  sprintf(str, "Preassure: %d", tempValue);
+  Serial.println(str);
+  tempValue = bmp.readTemperature();
+  sprintf(str, "BMP180 Temp: %d", tempValue);
+  Serial.println(str);
   delay(10000);
 
   char testData[200];
-  sprintf(testData, "{\"date\":\"1970-01-01T00:00:00Z\",\"temp\":\"%d\",\"humidity\":\"%d\",\"percievedTemp\":\"%d\"}", getTemp(), getHumidity(), getPercievedTemp());
+  sprintf(testData, "{\n\"date\":\"1970-01-01T00:00:00Z\",\n\"temp\":\"%d\",\n\"humidity\":\"%d\",\n\"percievedTemp\":\"%d\",\n\"preassure\":\"%d\",\n\"altitude\":\"%f\"\n}", getTemp(), getHumidity(), getPercievedTemp(), bmp.readPressure(), bmp.readAltitude(101502));
   if(WiFi.status() == WL_CONNECTED){
     sendJson(serverName, testData);
   }
