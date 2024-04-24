@@ -3,6 +3,7 @@
 #include <HTTPClient.h>
 #include "dht11.h"
 #include <Adafruit_BMP085.h>
+#include "anemometer.h"
 
 Adafruit_BMP085 bmp;
 
@@ -42,6 +43,7 @@ void sendJson(String serverPath, String jsonData){
 void setup() {
   Serial.begin(9600);
   setupDHT();
+  setupAnemometer(26);
 
   if (!bmp.begin()) {
 	  Serial.println("Could not find a valid BMP085/BMP180 sensor, check wiring!");
