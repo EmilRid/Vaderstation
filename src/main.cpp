@@ -4,6 +4,7 @@
 #include "dht11.h"
 #include <Adafruit_BMP085.h>
 #include "anemometer.h"
+#include "json.h"
 
 Adafruit_BMP085 bmp;
 
@@ -79,7 +80,8 @@ void loop() {
   tempValue = bmp.readTemperature();
   sprintf(str, "BMP180 Temp: %d", tempValue);
   Serial.println(str);
-  delay(10000);
+  Serial.println("Meassuring wind...");
+  Serial.println(readNumOfRotations());
 
   char testData[200];
   sprintf(testData, "{\n\"date\":\"1970-01-01T00:00:00Z\",\n\"temp\":\"%d\",\n\"humidity\":\"%d\",\n\"percievedTemp\":\"%d\",\n\"preassure\":\"%d\",\n\"altitude\":\"%f\"\n}", getTemp(), getHumidity(), getPercievedTemp(), bmp.readPressure(), bmp.readAltitude(101502));
