@@ -63,6 +63,15 @@ void setup() {
   initWiFi("Hugos iPhone", "hugowifi12333");
 }
 
+void readSensors() {
+  readSensor();
+  temp = getTemp();
+  humidity = getHumidity();
+  percievedTemp = getPercievedTemp();
+  pressure = bmp.readPressure();
+  altitude = bmp.readAltitude(101502);
+}
+
 void loop() {
   String serverName = "http://localhost:8184/json";
   
