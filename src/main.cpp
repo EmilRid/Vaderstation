@@ -7,6 +7,11 @@
 
 Adafruit_BMP085 bmp;
 String stationName = "Default_station";
+int temp;
+int humidity;
+int percievedTemp;
+int32_t pressure;
+float altitude;
 
 void initWiFi(String ssid, String password) {
   // Enable station mode (wifi client) and disconnect from previous
