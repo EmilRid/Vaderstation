@@ -12,6 +12,7 @@ int humidity;
 int percievedTemp;
 int32_t pressure;
 float altitude;
+float bmpTemp;
 
 void initWiFi(String ssid, String password) {
   // Enable station mode (wifi client) and disconnect from previous
@@ -70,34 +71,37 @@ void readSensors() {
   percievedTemp = getPercievedTemp();
   pressure = bmp.readPressure();
   altitude = bmp.readAltitude(101502);
+  bmpTemp = bmp.readTemperature();
+}
+
+void outputDebug() {
+  Serial.println();
+  char str[50];
+  sprintf(str, "Temp: %d", temp);
+  Serial.println(str);
+  sprintf(str, "Humidity :%d", humidity);
+  Serial.println(str);
+  sprintf(str, "Percieved Temp: %d", percievedTemp);
+  Serial.println(str);
+  delay(1000);
+  sprintf(str, "Altitude: %d", altitude);
+  Serial.println(str);
+  sprintf(str, "Preassure: %d", pressure);
+  Serial.println(str);
+  sprintf(str, "BMP180 Temp: %d", bmpTemp);
+  Serial.println(str);
 }
 
 void loop() {
   String serverName = "http://localhost:8184/json";
-  
-  readSensor();
-  Serial.println();
-  char str[50];
-  sprintf(str, "Temp: %d", getTemp());
-  Serial.println(str);
-  sprintf(str, "Humidity :%d", getHumidity());
-  Serial.println(str);
-  sprintf(str, "Percieved Temp: %d", getPercievedTemp());
-  Serial.println(str);
-  delay(1000);
-  int tempValue = bmp.readAltitude(101502);
-  sprintf(str, "Altitude: %d", tempValue);
-  Serial.println(str);
-  tempValue = bmp.readPressure();
-  sprintf(str, "Preassure: %d", tempValue);
-  Serial.println(str);
-  tempValue = bmp.readTemperature();
-  sprintf(str, "BMP180 Temp: %d", tempValue);
-  Serial.println(str);
+  boolean debug = true;
+
+  readSensors();
+  if(debug) outputDebug;  
   delay(10000);
 
   char testData[200];
-  sprintf(testData, "{\n\"date\":\"1970-01-01T00:00:00Z\",\n\"temp\":\"%d\",\n\"humidity\":\"%d\",\n\"percievedTemp\":\"%d\",\n\"preassure\":\"%d\",\n\"altitude\":\"%f\"\n}", getTemp(), getHumidity(), getPercievedTemp(), bmp.readPressure(), bmp.readAltitude(101502));
+  sprintf(testData, "{\n\"date\":\"1970-01-01T00:00:00Z\",\n\"temp\":\"%d\",\n\"humidity\":\"%d\",\n\"percievedTemp\":\"%d\",\n\"preassure\":\"%d\",\n\"altitude\":\"%f\"\n}", temp, humidity, percievedTemp, pressure, altitude);
   if(WiFi.status() == WL_CONNECTED){
     sendJson(serverName, testData);
   }
