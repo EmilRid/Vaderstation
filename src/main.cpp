@@ -6,6 +6,7 @@
 #include "anemometer.h"
 
 Adafruit_BMP085 bmp;
+String stationName = "Default_station";
 
 void initWiFi(String ssid, String password) {
   // Enable station mode (wifi client) and disconnect from previous
