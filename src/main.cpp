@@ -93,6 +93,14 @@ void outputDebug() {
   Serial.println(str);
 }
 
+void makeJson(Json jsonData){
+  jsonData.addValue("temp", std::to_string(temp));
+  jsonData.addValue("humidity", std::to_string(humidity));
+  jsonData.addValue("percieved temp", std::to_string(percievedTemp));
+  jsonData.addValue("altitude", std::to_string(altitude));
+  jsonData.addValue("pressure", std::to_string(pressure));
+}
+
 void loop() {
   String serverName = "http://localhost:8184/json";
   boolean debug = true;
@@ -101,8 +109,8 @@ void loop() {
   if(debug) outputDebug;  
   delay(10000);
 
-  char testData[200];
-  sprintf(testData, "{\n\"date\":\"1970-01-01T00:00:00Z\",\n\"temp\":\"%d\",\n\"humidity\":\"%d\",\n\"percievedTemp\":\"%d\",\n\"preassure\":\"%d\",\n\"altitude\":\"%f\"\n}", temp, humidity, percievedTemp, pressure, altitude);
+  Json testData = Json();
+  makeJson(testData);
   if(WiFi.status() == WL_CONNECTED){
     sendJson(serverName, testData.returnJson().c_str());
   }
