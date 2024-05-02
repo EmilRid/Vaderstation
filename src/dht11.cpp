@@ -6,27 +6,27 @@
 
 DHT dht(DHTPIN, DHTTYPE);
 
-int temp = -1;
-int humidity = -1;
+int dhtTemp = -1;
+int dhtHumidity = -1;
 
 void setupDHT(){
     dht.begin();
 }
 //changeme, bad name
 void readSensor(){
-    temp = dht.readTemperature();
-    humidity = dht.readHumidity();
+    dhtTemp = dht.readTemperature();
+    dhtHumidity = dht.readHumidity();
 }
 
 int getTemp(){
-    return(temp);
+    return(dhtTemp);
 }
 
 int getHumidity(){
-    return(humidity);
+    return(dhtHumidity);
 }
 
 int getPercievedTemp(){
     //heat index = percieved temp. set isFahrenheit = false for celcius
-    return(dht.computeHeatIndex(temp, humidity, false));
+    return(dht.computeHeatIndex(dhtTemp, dhtHumidity, false));
 }
