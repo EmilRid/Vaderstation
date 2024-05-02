@@ -4,6 +4,7 @@
 #include "dht11.h"
 #include <Adafruit_BMP085.h>
 #include "anemometer.h"
+#include "json.h"
 
 Adafruit_BMP085 bmp;
 String stationName = "Default_station";
@@ -103,6 +104,6 @@ void loop() {
   char testData[200];
   sprintf(testData, "{\n\"date\":\"1970-01-01T00:00:00Z\",\n\"temp\":\"%d\",\n\"humidity\":\"%d\",\n\"percievedTemp\":\"%d\",\n\"preassure\":\"%d\",\n\"altitude\":\"%f\"\n}", temp, humidity, percievedTemp, pressure, altitude);
   if(WiFi.status() == WL_CONNECTED){
-    sendJson(serverName, testData);
+    sendJson(serverName, testData.returnJson().c_str());
   }
 }
