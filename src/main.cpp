@@ -7,6 +7,13 @@
 #include "json.h"
 
 Adafruit_BMP085 bmp;
+String stationName = "Default_station";
+int temp;
+int humidity;
+int percievedTemp;
+int32_t pressure;
+float altitude;
+float bmpTemp;
 
 void initWiFi(String ssid, String password) {
   // Enable station mode (wifi client) and disconnect from previous
@@ -58,33 +65,44 @@ void setup() {
   initWiFi("Hugos iPhone", "hugowifi12333");
 }
 
-void loop() {
-  String serverName = "http://hugoblomdahl.se:8184/json";
-  
+void readSensors() {
   readSensor();
+  temp = getTemp();
+  humidity = getHumidity();
+  percievedTemp = getPercievedTemp();
+  pressure = bmp.readPressure();
+  altitude = bmp.readAltitude(101502);
+  bmpTemp = bmp.readTemperature();
+}
+
+void outputDebug() {
   Serial.println();
   char str[50];
-  sprintf(str, "Temp: %d", getTemp());
+  sprintf(str, "Temp: %d", temp);
   Serial.println(str);
-  sprintf(str, "Humidity :%d", getHumidity());
+  sprintf(str, "Humidity :%d", humidity);
   Serial.println(str);
-  sprintf(str, "Percieved Temp: %d", getPercievedTemp());
+  sprintf(str, "Percieved Temp: %d", percievedTemp);
   Serial.println(str);
   delay(1000);
-  int tempValue = bmp.readAltitude(101502);
-  sprintf(str, "Altitude: %d", tempValue);
+  sprintf(str, "Altitude: %d", altitude);
   Serial.println(str);
-  tempValue = bmp.readPressure();
-  sprintf(str, "Preassure: %d", tempValue);
+  sprintf(str, "Preassure: %d", pressure);
   Serial.println(str);
-  tempValue = bmp.readTemperature();
-  sprintf(str, "BMP180 Temp: %d", tempValue);
+  sprintf(str, "BMP180 Temp: %d", bmpTemp);
   Serial.println(str);
-  Serial.println("Meassuring wind...");
-  Serial.println(readNumOfRotations());
+}
 
-  
-  Json testData = Json();
+void loop() {
+  String serverName = "http://localhost:8184/json";
+  boolean debug = true;
+
+  readSensors();
+  if(debug) outputDebug;  
+  delay(10000);
+
+  char testData[200];
+  sprintf(testData, "{\n\"date\":\"1970-01-01T00:00:00Z\",\n\"temp\":\"%d\",\n\"humidity\":\"%d\",\n\"percievedTemp\":\"%d\",\n\"preassure\":\"%d\",\n\"altitude\":\"%f\"\n}", temp, humidity, percievedTemp, pressure, altitude);
   if(WiFi.status() == WL_CONNECTED){
     sendJson(serverName, testData.returnJson().c_str());
   }
