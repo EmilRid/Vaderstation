@@ -12,7 +12,7 @@ class Json{
         int getIndex(std::string tag);
 
     
-    private:
+    public:
         void addValue(std::string tag, std::string value);
         std::string getValue(std::string tag);
         void changeValue(std::string tag, std::string value);

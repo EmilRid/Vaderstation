@@ -62,6 +62,10 @@ void Json::remove(std::string tag){
     }
 }
 std::string Json::returnJson(){
-    return("WIP");
-    //todo return all data as single valid json string
+    std::string output = "\"icarus\": {";
+    for(int i=0; i<size; i++){
+        output += ",\n\"" + *tags[i] + "\": \"" + *values[i] + "\"";
+    }
+    output += "\n}";
+    return output;
 }

@@ -59,7 +59,7 @@ void setup() {
 }
 
 void loop() {
-  String serverName = "http://localhost:8184/json";
+  String serverName = "http://hugoblomdahl.se:8184/json";
   
   readSensor();
   Serial.println();
@@ -83,9 +83,9 @@ void loop() {
   Serial.println("Meassuring wind...");
   Serial.println(readNumOfRotations());
 
-  char testData[200];
-  sprintf(testData, "{\n\"date\":\"1970-01-01T00:00:00Z\",\n\"temp\":\"%d\",\n\"humidity\":\"%d\",\n\"percievedTemp\":\"%d\",\n\"preassure\":\"%d\",\n\"altitude\":\"%f\"\n}", getTemp(), getHumidity(), getPercievedTemp(), bmp.readPressure(), bmp.readAltitude(101502));
+  
+  Json testData = Json();
   if(WiFi.status() == WL_CONNECTED){
-    sendJson(serverName, testData);
+    sendJson(serverName, testData.returnJson().c_str());
   }
 }
