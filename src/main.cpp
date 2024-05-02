@@ -23,7 +23,7 @@ void initWiFi(String ssid, String password) {
   WiFi.begin(ssid, password);
   Serial.print("Connecting to WiFi ..");
   //25s to connect
-  for(int i=0; i<2; i++){
+  for(int i=0; i<20; i++){
     if(WiFi.status() != WL_CONNECTED) {
       Serial.print('.');
       delay(1000);
@@ -42,10 +42,18 @@ void initWiFi(String ssid, String password) {
 void sendJson(String serverPath, String jsonData){
   HTTPClient http;
   
-  http.begin(serverPath.c_str());
+  http.begin((serverPath + "/json").c_str());
   http.addHeader("Content-Type", "application/json");
   int httpResponseCode = http.POST(jsonData);
   Serial.print(httpResponseCode);
+}
+
+bool checkRequest(String serverPath){
+  HTTPClient http;
+
+  http.begin((serverPath + "/condition").c_str());
+  int httpResponseCode = http.POST("isConditionMet");//magic string
+  return httpResponseCode==200;
 }
 
 void setup() {
@@ -93,7 +101,7 @@ void outputDebug() {
   Serial.println(str);
 }
 
-void makeJson(Json jsonData){
+void makeJson(Json& jsonData){
   jsonData.addValue("temp", std::to_string(temp));
   jsonData.addValue("humidity", std::to_string(humidity));
   jsonData.addValue("percieved temp", std::to_string(percievedTemp));
@@ -102,7 +110,7 @@ void makeJson(Json jsonData){
 }
 
 void loop() {
-  String serverName = "http://localhost:8184/json";
+  String serverName = "http://localhost:8184";
   boolean debug = true;
 
   readSensors();
@@ -111,7 +119,8 @@ void loop() {
 
   Json testData = Json();
   makeJson(testData);
-  if(WiFi.status() == WL_CONNECTED){
+  Serial.println(testData.returnJson().c_str());
+  if(WiFi.status() == WL_CONNECTED && checkRequest(serverName)){
     sendJson(serverName, testData.returnJson().c_str());
   }
 }
