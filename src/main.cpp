@@ -42,10 +42,18 @@ void initWiFi(String ssid, String password) {
 void sendJson(String serverPath, String jsonData){
   HTTPClient http;
   
-  http.begin(serverPath.c_str());
+  http.begin((serverPath + "/json").c_str());
   http.addHeader("Content-Type", "application/json");
   int httpResponseCode = http.POST(jsonData);
   Serial.print(httpResponseCode);
+}
+
+bool checkCondition(String serverPath){
+  HTTPClient http;
+
+  http.begin((serverPath + "/condition").c_str());
+  int httpResponseCode = http.GET();
+  return httpResponseCode == 200;
 }
 
 void setup() {
@@ -66,7 +74,7 @@ void setup() {
 }
 
 void readSensors() {
-  readSensor();
+  dhtReadSensor();
   temp = getTemp();
   humidity = getHumidity();
   percievedTemp = getPercievedTemp();
@@ -93,16 +101,17 @@ void outputDebug() {
   Serial.println(str);
 }
 
-void makeJson(Json jsonData){
-  jsonData.addValue("temp", std::to_string(temp));
+void makeJson(Json& jsonData){
+  jsonData.addValue("Date", "2025");
+  jsonData.addValue("Temperature", std::to_string(temp));
   jsonData.addValue("humidity", std::to_string(humidity));
-  jsonData.addValue("percieved temp", std::to_string(percievedTemp));
+  jsonData.addValue("percievedTemp", std::to_string(percievedTemp));
   jsonData.addValue("altitude", std::to_string(altitude));
   jsonData.addValue("pressure", std::to_string(pressure));
 }
 
 void loop() {
-  String serverName = "http://localhost:8184/json";
+  String serverName = "http://hugoblomdahl.se:8184";
   boolean debug = true;
 
   readSensors();
@@ -111,7 +120,10 @@ void loop() {
 
   Json testData = Json();
   makeJson(testData);
+  Serial.println(testData.returnJson().c_str());
   if(WiFi.status() == WL_CONNECTED){
-    sendJson(serverName, testData.returnJson().c_str());
+    if(checkCondition(serverName)){
+      sendJson(serverName, testData.returnJson().c_str());
+    }
   }
 }

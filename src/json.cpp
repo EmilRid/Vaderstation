@@ -62,14 +62,14 @@ void Json::remove(std::string tag){
     }
 }
 std::string Json::returnJson(){
-    std::string output = "\"icarus\": {";
+    std::string output = "{\n\"Icarus\": {";
     for(int i=0; i<size; i++){
         //this is bad
         if(i!=0){
             output+=",";
         }
-        output += "\n\"" + *tags[i] + "\": \"" + *values[i] + "\"";
+        output += "\n\"" + *tags[i] + "\": " + *values[i];
     }
-    output += "\n}";
+    output += "\n}\n}";
     return output;
 }
