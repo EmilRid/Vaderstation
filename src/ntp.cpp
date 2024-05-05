@@ -16,8 +16,16 @@ void initNTP() {
   timeClient.setTimeOffset(7200);
 }
 
+String formatData(int value) {
+    if (value < 10) {
+        return "0" + String(value);
+    } else {
+        return String(value);
+    }
+}
+
 String getDateTime() {
   timeClient.forceUpdate();
   time_t t = timeClient.getEpochTime();
-  return String(year(t))+"-"+String(month(t))+"-"+String(day(t))+"T"+String(hour(t))+":"+String(minute(t))+":"+String(second(t))+"Z";
+  return formatData(year(t))+"-"+formatData(month(t))+"-"+formatData(day(t))+"T"+formatData(hour(t))+":"+formatData(minute(t))+":"+formatData(second(t))+"Z";
 }
