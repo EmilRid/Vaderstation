@@ -5,6 +5,7 @@
 #include <Adafruit_BMP085.h>
 #include "anemometer.h"
 #include "json.h"
+#include "ntp.h"
 
 Adafruit_BMP085 bmp;
 String stationName = "Default_station";
@@ -14,6 +15,7 @@ int percievedTemp;
 int32_t pressure;
 float altitude;
 float bmpTemp;
+String dateTime;
 
 void initWiFi(String ssid, String password) {
   // Enable station mode (wifi client) and disconnect from previous
@@ -23,7 +25,7 @@ void initWiFi(String ssid, String password) {
   WiFi.begin(ssid, password);
   Serial.print("Connecting to WiFi ..");
   //25s to connect
-  for(int i=0; i<2; i++){
+  for(int i=0; i<10; i++){
     if(WiFi.status() != WL_CONNECTED) {
       Serial.print('.');
       delay(1000);
@@ -71,9 +73,11 @@ void setup() {
   Serial.println("Setup done");
   //enter wifi details.
   initWiFi("Hugos iPhone", "hugowifi12333");
+  initNTP();
 }
 
 void readSensors() {
+  dateTime = getDateTime();
   dhtReadSensor();
   temp = getTemp();
   humidity = getHumidity();
@@ -102,7 +106,7 @@ void outputDebug() {
 }
 
 void makeJson(Json& jsonData){
-  jsonData.addValue("Date", "2025");
+  jsonData.addValue("Date", dateTime.c_str());
   jsonData.addValue("Temperature", std::to_string(temp));
   jsonData.addValue("humidity", std::to_string(humidity));
   jsonData.addValue("percievedTemp", std::to_string(percievedTemp));
@@ -111,7 +115,7 @@ void makeJson(Json& jsonData){
 }
 
 void loop() {
-  String serverName = "http://hugoblomdahl.se:8184";
+  String serverName = "";//"http://hugoblomdahl.se:8184";
   boolean debug = true;
 
   readSensors();
