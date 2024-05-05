@@ -115,7 +115,7 @@ void makeJson(Json& jsonData){
 }
 
 void loop() {
-  String serverName = "";//"http://hugoblomdahl.se:8184";
+  String serverName = "http://hugoblomdahl.se:8184";
   boolean debug = true;
 
   readSensors();
