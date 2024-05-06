@@ -74,10 +74,12 @@ void setup() {
   //enter wifi details.
   initWiFi("Hugos iPhone", "hugowifi12333");
   initNTP();
+  if(WiFi.status() == WL_CONNECTED){
+    dateTime = getDateTime();
+  }
 }
 
 void readSensors() {
-  dateTime = getDateTime();
   dhtReadSensor();
   temp = getTemp();
   humidity = getHumidity();
