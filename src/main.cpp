@@ -74,12 +74,12 @@ void setup() {
   //enter wifi details.
   initWiFi("Hugos iPhone", "hugowifi12333");
   initNTP();
-  if(WiFi.status() == WL_CONNECTED){
-    dateTime = getDateTime();
-  }
 }
 
 void readSensors() {
+  if(WiFi.status() == WL_CONNECTED){
+    dateTime = getDateTime();
+  }
   dhtReadSensor();
   temp = getTemp();
   humidity = getHumidity();
@@ -91,20 +91,12 @@ void readSensors() {
 
 void outputDebug() {
   Serial.println();
-  char str[50];
-  sprintf(str, "Temp: %d", temp);
-  Serial.println(str);
-  sprintf(str, "Humidity :%d", humidity);
-  Serial.println(str);
-  sprintf(str, "Percieved Temp: %d", percievedTemp);
-  Serial.println(str);
-  delay(1000);
-  sprintf(str, "Altitude: %d", altitude);
-  Serial.println(str);
-  sprintf(str, "Preassure: %d", pressure);
-  Serial.println(str);
-  sprintf(str, "BMP180 Temp: %d", bmpTemp);
-  Serial.println(str);
+  Serial.println("Date: " + dateTime);
+  Serial.println(("Temp: " + std::to_string(temp)).c_str());
+  Serial.println(("Humidity: " + std::to_string(humidity)).c_str());
+  Serial.println(("Feels like: " + std::to_string(percievedTemp)).c_str());
+  Serial.println(("Altitude: " + std::to_string(altitude)).c_str());
+  Serial.println(("Pressure: " + std::to_string(pressure)).c_str());
 }
 
 void makeJson(Json& jsonData){
@@ -121,12 +113,12 @@ void loop() {
   boolean debug = true;
 
   readSensors();
-  if(debug) outputDebug;  
+  if(debug) outputDebug();  
   delay(10000);
 
   Json testData = Json(stationName);
   makeJson(testData);
-  Serial.println(testData.returnJson().c_str());
+  //Serial.println(testData.returnJson().c_str());
   if(WiFi.status() == WL_CONNECTED){
     if(checkCondition(serverName)){
       sendJson(serverName, testData.returnJson().c_str());
