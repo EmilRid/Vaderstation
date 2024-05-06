@@ -52,7 +52,7 @@ bool checkRequest(String serverPath){
   HTTPClient http;
 
   http.begin((serverPath + "/condition").c_str());
-  int httpResponseCode = http.POST("isConditionMet");//magic string
+  int httpResponseCode = http.GET();
   return httpResponseCode==200;
 }
 
