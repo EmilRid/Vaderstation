@@ -9,6 +9,7 @@
 
 Adafruit_BMP085 bmp;
 std::string stationName = "Icarus";
+bool bmpPresent;
 int temp;
 int humidity;
 int percievedTemp;
@@ -65,9 +66,11 @@ void setup() {
 
   if (!bmp.begin()) {
 	  Serial.println("Could not find a valid BMP085/BMP180 sensor, check wiring!");
+    bmpPresent = false;
 	}
   else{
     Serial.println("BMP found!");
+    bmpPresent = true;
   }
 
   Serial.println("Setup done");
@@ -84,9 +87,11 @@ void readSensors() {
   temp = getTemp();
   humidity = getHumidity();
   percievedTemp = getPercievedTemp();
-  pressure = bmp.readPressure();
-  altitude = bmp.readAltitude(101502);
-  bmpTemp = bmp.readTemperature();
+  if(bmpPresent){
+    pressure = bmp.readPressure();
+    altitude = bmp.readAltitude();
+    bmpTemp = bmp.readTemperature();
+  }
 }
 
 void outputDebug() {
@@ -114,7 +119,7 @@ void loop() {
 
   readSensors();
   if(debug) outputDebug();  
-  delay(10000);
+  
 
   Json testData = Json(stationName);
   makeJson(testData);
@@ -124,4 +129,5 @@ void loop() {
       sendJson(serverName, testData.returnJson().c_str());
     }
   }
+  delay(10000);
 }
