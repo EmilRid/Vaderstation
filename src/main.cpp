@@ -8,7 +8,7 @@
 #include "ntp.h"
 
 Adafruit_BMP085 bmp;
-String stationName = "Default_station";
+std::string stationName = "Icarus";
 int temp;
 int humidity;
 int percievedTemp;
@@ -124,7 +124,7 @@ void loop() {
   if(debug) outputDebug;  
   delay(10000);
 
-  Json testData = Json();
+  Json testData = Json(stationName);
   makeJson(testData);
   Serial.println(testData.returnJson().c_str());
   if(WiFi.status() == WL_CONNECTED){

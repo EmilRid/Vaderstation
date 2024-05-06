@@ -6,6 +6,7 @@ class Json{
     private:
         int capacity = 10;
         int size = 0;
+        std::string base;
         std::string** tags = new std::string*[capacity];
         std::string** values = new std::string*[capacity];
         void expand();
@@ -18,6 +19,7 @@ class Json{
         void changeValue(std::string tag, std::string value);
         void remove(std::string tag);
         std::string returnJson();
+        Json(std::string base);
 };
 
 
