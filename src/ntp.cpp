@@ -1,8 +1,5 @@
-#include <NTPClient.h>
-#include <WiFiUdp.h>
-#include <TimeLib.h>
+#include <ntp.h>
 
-std::string serverPool = "";
 WiFiUDP ntpUDP;
 NTPClient timeClient(ntpUDP);
 
@@ -19,7 +16,7 @@ void initNTP() {
 
   
   // If the serverPool is defined, set timeClient pool to serverPool
-  if(serverPool != "") timeClient.setPoolServerName(serverPool.c_str());
+  if(NTP_SERVER != "") timeClient.setPoolServerName(NTP_SERVER);
 }
 
 String formatData(int value) {

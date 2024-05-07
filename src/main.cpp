@@ -6,9 +6,9 @@
 #include "anemometer.h"
 #include "json.h"
 #include "ntp.h"
+#include "config.h"
 
 Adafruit_BMP085 bmp;
-std::string stationName = "Icarus";
 bool bmpPresent;
 int temp;
 int humidity;
@@ -75,7 +75,7 @@ void setup() {
 
   Serial.println("Setup done");
   //enter wifi details.
-  initWiFi("Hugos iPhone", "hugowifi12333");
+  initWiFi(WIFI_SSID, WIFI_PASSWORD);
   initNTP();
 }
 
@@ -100,34 +100,36 @@ void outputDebug() {
   Serial.println(("Temp: " + std::to_string(temp)).c_str());
   Serial.println(("Humidity: " + std::to_string(humidity)).c_str());
   Serial.println(("Feels like: " + std::to_string(percievedTemp)).c_str());
-  Serial.println(("Altitude: " + std::to_string(altitude)).c_str());
-  Serial.println(("Pressure: " + std::to_string(pressure)).c_str());
+  if(HAS_BMP){
+    Serial.println(("Altitude: " + std::to_string(altitude)).c_str());
+    Serial.println(("Pressure: " + std::to_string(pressure)).c_str());
+  }
 }
 
 void makeJson(Json& jsonData){
-  jsonData.addValue("Date", dateTime.c_str());
+  jsonData.addValue("Date", ("\"" + dateTime + "\"").c_str());
   jsonData.addValue("Temperature", std::to_string(temp));
   jsonData.addValue("humidity", std::to_string(humidity));
   jsonData.addValue("percievedTemp", std::to_string(percievedTemp));
-  jsonData.addValue("altitude", std::to_string(altitude));
-  jsonData.addValue("pressure", std::to_string(pressure));
+  if(HAS_BMP){
+    jsonData.addValue("altitude", std::to_string(altitude));
+    jsonData.addValue("pressure", std::to_string(pressure));
+  }
 }
 
 void loop() {
-  String serverName = "http://hugoblomdahl.se:8184";
-  boolean debug = true;
-
   readSensors();
-  if(debug) outputDebug();  
+  if(DEBUG) outputDebug();  
   
-
-  Json testData = Json(stationName);
+  Json testData = Json(STATION_NAME);
   makeJson(testData);
   //Serial.println(testData.returnJson().c_str());
   if(WiFi.status() == WL_CONNECTED){
-    if(checkCondition(serverName)){
-      sendJson(serverName, testData.returnJson().c_str());
+    if(checkCondition(SERVER_ADDRESS)){
+      Serial.println("Server wants data");
+      sendJson(SERVER_ADDRESS, testData.returnJson().c_str());
     }
+    else{Serial.println("Server dont want data");}
   }
   delay(10000);
 }
