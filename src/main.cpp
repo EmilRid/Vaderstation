@@ -7,6 +7,7 @@
 #include "json.h"
 #include "ntp.h"
 #include "config.h"
+#include <LiquidCrystal_I2C.h>
 
 Adafruit_BMP085 bmp;
 bool bmpPresent;
@@ -17,6 +18,7 @@ int32_t pressure;
 float altitude;
 float bmpTemp;
 String dateTime;
+RTC_DATA_ATTR bool firstBoot = true;
 
 void initWiFi(String ssid, String password) {
   // Enable station mode (wifi client) and disconnect from previous
@@ -104,7 +106,9 @@ void setup() {
   Serial.begin(9600);
   setupDHT();
   setupAnemometer(26);
-
+  
+  
+  
   if (!bmp.begin()) {
 	  Serial.println("Could not find a valid BMP085/BMP180 sensor, check wiring!");
     bmpPresent = false;
@@ -129,15 +133,31 @@ void setup() {
     else{Serial.println("Server dont want data");}
   }
 
-  esp_sleep_enable_timer_wakeup(TIME_TO_SLEEP * uS_TO_S_FACTOR);
-  readSensors();
-  if(DEBUG) outputDebug();  
   
+  readSensors();
+  if(DEBUG) outputDebug();
+  if(HAS_LCD){
+      LiquidCrystal_I2C lcd(0x27, 16, 2);
+    if(firstBoot){
+      lcd.init();
+      }
+      //lcd.backlight();
+      lcd.clear();
+      lcd.setCursor(0,0);
+
+      std::string lcd_s = "T:";
+      lcd_s += std::to_string(temp);
+      lcd_s += "H:";
+      lcd_s += std::to_string(humidity);
+      lcd.print(lcd_s.c_str());
+  }
  
   makeJson(testData);
+  esp_sleep_enable_timer_wakeup(TIME_TO_SLEEP * uS_TO_S_FACTOR);
   Serial.println("Going to sleep now");
   delay(1000);
-  Serial.flush(); 
+  Serial.flush();
+  firstBoot = false;
   esp_deep_sleep_start();
 }
 
