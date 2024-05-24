@@ -59,25 +59,7 @@ bool checkCondition(String serverPath){
   return httpResponseCode == 200;
 }
 
-void setup() {
-  Serial.begin(9600);
-  setupDHT();
-  setupAnemometer(26);
 
-  if (!bmp.begin()) {
-	  Serial.println("Could not find a valid BMP085/BMP180 sensor, check wiring!");
-    bmpPresent = false;
-	}
-  else{
-    Serial.println("BMP found!");
-    bmpPresent = true;
-  }
-
-  Serial.println("Setup done");
-  //enter wifi details.
-  initWiFi(WIFI_SSID, WIFI_PASSWORD);
-  initNTP();
-}
 
 void readSensors() {
   if(WiFi.status() == WL_CONNECTED){
@@ -92,6 +74,7 @@ void readSensors() {
     altitude = bmp.readAltitude();
     bmpTemp = bmp.readTemperature();
   }
+  Serial.println("Read values!");
 }
 
 void outputDebug() {
@@ -115,11 +98,28 @@ void makeJson(Json& jsonData){
     jsonData.addValue("altitude", std::to_string(altitude));
     jsonData.addValue("pressure", std::to_string(pressure));
   }
-  readSensors();
-  if(DEBUG) outputDebug();  
-  
+}
+
+void setup() {
+  Serial.begin(9600);
+  setupDHT();
+  setupAnemometer(26);
+
+  if (!bmp.begin()) {
+	  Serial.println("Could not find a valid BMP085/BMP180 sensor, check wiring!");
+    bmpPresent = false;
+	}
+  else{
+    Serial.println("BMP found!");
+    bmpPresent = true;
+  }
+
+  Serial.println("Setup done");
+  //enter wifi details.
+  initWiFi(WIFI_SSID, WIFI_PASSWORD);
+  initNTP();
+
   Json testData = Json(STATION_NAME);
-  makeJson(testData);
   //Serial.println(testData.returnJson().c_str());
   if(WiFi.status() == WL_CONNECTED){
     if(checkCondition(SERVER_ADDRESS)){
@@ -128,7 +128,13 @@ void makeJson(Json& jsonData){
     }
     else{Serial.println("Server dont want data");}
   }
+
   esp_sleep_enable_timer_wakeup(TIME_TO_SLEEP * uS_TO_S_FACTOR);
+  readSensors();
+  if(DEBUG) outputDebug();  
+  
+ 
+  makeJson(testData);
   Serial.println("Going to sleep now");
   delay(1000);
   Serial.flush(); 
