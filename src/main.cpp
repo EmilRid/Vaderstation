@@ -136,6 +136,5 @@ void makeJson(Json& jsonData){
 }
 
 void loop() {
-  
-  delay(10000);
+  //is never called
 }
