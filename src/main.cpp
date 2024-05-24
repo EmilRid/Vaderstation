@@ -115,9 +115,6 @@ void makeJson(Json& jsonData){
     jsonData.addValue("altitude", std::to_string(altitude));
     jsonData.addValue("pressure", std::to_string(pressure));
   }
-}
-
-void loop() {
   readSensors();
   if(DEBUG) outputDebug();  
   
@@ -131,5 +128,13 @@ void loop() {
     }
     else{Serial.println("Server dont want data");}
   }
-  delay(10000);
+  esp_sleep_enable_timer_wakeup(TIME_TO_SLEEP * uS_TO_S_FACTOR);
+  Serial.println("Going to sleep now");
+  delay(1000);
+  Serial.flush(); 
+  esp_deep_sleep_start();
+}
+
+void loop() {
+  //is never called
 }
