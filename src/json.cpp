@@ -77,3 +77,12 @@ std::string Json::returnJson(){
 Json::Json(std::string base){
     Json::base = base;
 }
+
+Json::~Json(){
+    for(int i=0; i<size; i++){
+        delete tags[i];
+        delete values[i];
+    }
+    delete tags;
+    delete values;
+}

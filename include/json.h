@@ -20,6 +20,7 @@ class Json{
         void remove(std::string tag);
         std::string returnJson();
         Json(std::string base);
+        ~Json();
 };
 
 
