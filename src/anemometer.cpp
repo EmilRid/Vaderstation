@@ -11,11 +11,11 @@ void setupAnemometer(int pin){
     pinNum = pin;
 }
 
-int readNumOfRotations(){
+double readRPM(int seconds){
     counter = 0;
     unsigned long startTime = millis();
     attachInterrupt(digitalPinToInterrupt(pinNum), sensorTriggerd, FALLING);
-    delay(10000);
+    delay(seconds * 1000);
     detachInterrupt(digitalPinToInterrupt(pinNum));
-    return counter;
+    return((counter / seconds) * 60.0);
 }

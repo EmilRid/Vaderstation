@@ -5,9 +5,10 @@
 #define NTP_SERVER "se.pool.ntp.org"
 #define WIFI_SSID "Hugos iPhone"
 #define WIFI_PASSWORD "hugowifi12333"
+#define WIFI_TIMEOUT 1
 #define TIME_TO_SLEEP 20
 #define uS_TO_S_FACTOR 1000000
 
 #define HAS_BMP true
-#define HAS_ANEMOMETER false
+#define HAS_ANEMOMETER true
 #define DEBUG true

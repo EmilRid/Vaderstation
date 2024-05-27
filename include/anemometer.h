@@ -3,6 +3,6 @@
 #define ANEMOMETER_H
 
 void setupAnemometer(int pinNum);
-int readNumOfRotations();
+double readRPM(int seconds);
 
 #endif
