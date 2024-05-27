@@ -133,15 +133,17 @@ void setup() {
     else{Serial.println("Server dont want data");}
   }
 
-  
-  readSensors();
+  if(DEBUG||HAS_LCD||WiFi.status() == WL_CONNECTED){
+    readSensors();
   if(DEBUG) outputDebug();
   if(HAS_LCD){
       LiquidCrystal_I2C lcd(0x27, 16, 2);
     if(firstBoot){
       lcd.init();
       }
-      //lcd.backlight();
+      if(ENABLE_LCD_BACKLIGHT){
+        lcd.backlight();
+      }
       lcd.clear();
       lcd.setCursor(0,0);
 
@@ -151,8 +153,8 @@ void setup() {
       lcd_s += std::to_string(humidity);
       lcd.print(lcd_s.c_str());
   }
- 
   makeJson(testData);
+}
   esp_sleep_enable_timer_wakeup(TIME_TO_SLEEP * uS_TO_S_FACTOR);
   Serial.println("Going to sleep now");
   delay(1000);

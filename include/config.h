@@ -11,4 +11,5 @@
 #define HAS_BMP true
 #define HAS_ANEMOMETER false
 #define HAS_LCD true
-#define DEBUG true
+#define ENABLE_LCD_BACKLIGHT true
+#define DEBUG false
