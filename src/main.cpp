@@ -147,11 +147,16 @@ void setup() {
       lcd.clear();
       lcd.setCursor(0,0);
 
-      std::string lcd_s = "T:";
-      lcd_s += std::to_string(temp);
-      lcd_s += "H:";
-      lcd_s += std::to_string(humidity);
-      lcd.print(lcd_s.c_str());
+      std::string lcd_s_1 = "Temp:";
+      lcd_s_1 += std::to_string(temp);
+      lcd_s_1 += " Humid:";
+      lcd_s_1 += std::to_string(humidity);
+      std::string lcd_s_2 = "Feels like:";
+      lcd_s_2 += std::to_string(percievedTemp);
+      lcd.print(lcd_s_1.c_str());
+      lcd.setCursor(0,1);
+      lcd.print(lcd_s_2.c_str());
+
   }
   makeJson(testData);
 }
