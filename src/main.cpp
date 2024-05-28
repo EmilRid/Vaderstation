@@ -19,6 +19,7 @@ float altitude;
 float bmpTemp;
 String dateTime;
 RTC_DATA_ATTR bool firstBoot = true;
+double RPM;
 
 void initWiFi(String ssid, String password) {
   // Enable station mode (wifi client) and disconnect from previous
@@ -27,8 +28,7 @@ void initWiFi(String ssid, String password) {
   delay(100);
   WiFi.begin(ssid, password);
   Serial.print("Connecting to WiFi ..");
-  //25s to connect
-  for(int i=0; i<10; i++){
+  for(int i=0; i<WIFI_TIMEOUT; i++){
     if(WiFi.status() != WL_CONNECTED) {
       Serial.print('.');
       delay(1000);
@@ -76,7 +76,12 @@ void readSensors() {
     altitude = bmp.readAltitude();
     bmpTemp = bmp.readTemperature();
   }
+  if(HAS_ANEMOMETER){
+    RPM = readRPM(3);
+  }
+
   Serial.println("Read values!");
+  
 }
 
 void outputDebug() {
@@ -88,6 +93,9 @@ void outputDebug() {
   if(HAS_BMP){
     Serial.println(("Altitude: " + std::to_string(altitude)).c_str());
     Serial.println(("Pressure: " + std::to_string(pressure)).c_str());
+  }
+  if(HAS_ANEMOMETER){
+    Serial.println(("Anemometer RPM: " + std::to_string(RPM)).c_str());
   }
 }
 
@@ -102,10 +110,29 @@ void makeJson(Json& jsonData){
   }
 }
 
+
 void setup() {
   Serial.begin(9600);
   setupDHT();
   setupAnemometer(26);
+
+  if (!bmp.begin()) {
+	  Serial.println("Could not find a valid BMP085/BMP180 sensor, check wiring!");
+    bmpPresent = false;
+	}
+  else{
+    Serial.println("BMP found!");
+    bmpPresent = true;
+  }
+
+  Serial.println("Setup done");
+  //enter wifi details.
+  initWiFi(WIFI_SSID, WIFI_PASSWORD);
+  initNTP();
+
+  readSensors();
+  if(DEBUG) outputDebug();  
+
   
   
   
@@ -167,6 +194,7 @@ void setup() {
   firstBoot = false;
   esp_deep_sleep_start();
 }
+  
 
 void loop() {
   //is never called
