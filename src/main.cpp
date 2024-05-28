@@ -7,6 +7,7 @@
 #include "json.h"
 #include "ntp.h"
 #include "config.h"
+#include <LiquidCrystal_I2C.h>
 
 Adafruit_BMP085 bmp;
 bool bmpPresent;
@@ -17,6 +18,7 @@ int32_t pressure;
 float altitude;
 float bmpTemp;
 String dateTime;
+RTC_DATA_ATTR bool firstBoot = true;
 double RPM;
 
 void initWiFi(String ssid, String password) {
@@ -77,6 +79,9 @@ void readSensors() {
   if(HAS_ANEMOMETER){
     RPM = readRPM(3);
   }
+
+  Serial.println("Read values!");
+  
 }
 
 void outputDebug() {
@@ -103,7 +108,8 @@ void makeJson(Json& jsonData){
     jsonData.addValue("altitude", std::to_string(altitude));
     jsonData.addValue("pressure", std::to_string(pressure));
   }
-}  
+}
+
 
 void setup() {
   Serial.begin(9600);
@@ -126,9 +132,25 @@ void setup() {
 
   readSensors();
   if(DEBUG) outputDebug();  
+
   
+  
+  
+  if (!bmp.begin()) {
+	  Serial.println("Could not find a valid BMP085/BMP180 sensor, check wiring!");
+    bmpPresent = false;
+	}
+  else{
+    Serial.println("BMP found!");
+    bmpPresent = true;
+  }
+
+  Serial.println("Setup done");
+  //enter wifi details.
+  initWiFi(WIFI_SSID, WIFI_PASSWORD);
+  initNTP();
+
   Json testData = Json(STATION_NAME);
-  makeJson(testData);
   //Serial.println(testData.returnJson().c_str());
   if(WiFi.status() == WL_CONNECTED){
     if(checkCondition(SERVER_ADDRESS)){
@@ -137,10 +159,39 @@ void setup() {
     }
     else{Serial.println("Server dont want data");}
   }
+
+  if(DEBUG||HAS_LCD||WiFi.status() == WL_CONNECTED){
+    readSensors();
+  if(DEBUG) outputDebug();
+  if(HAS_LCD){
+      LiquidCrystal_I2C lcd(0x27, 16, 2);
+    if(firstBoot){
+      lcd.init();
+      }
+      if(ENABLE_LCD_BACKLIGHT){
+        lcd.backlight();
+      }
+      lcd.clear();
+      lcd.setCursor(0,0);
+
+      std::string lcd_s_1 = "Temp:";
+      lcd_s_1 += std::to_string(temp);
+      lcd_s_1 += " Humid:";
+      lcd_s_1 += std::to_string(humidity);
+      std::string lcd_s_2 = "Feels like:";
+      lcd_s_2 += std::to_string(percievedTemp);
+      lcd.print(lcd_s_1.c_str());
+      lcd.setCursor(0,1);
+      lcd.print(lcd_s_2.c_str());
+
+  }
+  makeJson(testData);
+}
   esp_sleep_enable_timer_wakeup(TIME_TO_SLEEP * uS_TO_S_FACTOR);
   Serial.println("Going to sleep now");
   delay(1000);
-  Serial.flush(); 
+  Serial.flush();
+  firstBoot = false;
   esp_deep_sleep_start();
 }
   
