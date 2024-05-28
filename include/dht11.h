@@ -1,3 +1,4 @@
+//Author: Hugo
 #include <Adafruit_Sensor.h>
 
 #ifndef DHT11_SENSOR_H

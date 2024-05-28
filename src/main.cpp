@@ -1,3 +1,5 @@
+//Author: Hugo
+//Edited by Emil and Robin
 #include <Arduino.h>
 #include <WiFi.h>
 #include <HTTPClient.h>
@@ -115,26 +117,6 @@ void setup() {
   Serial.begin(9600);
   setupDHT();
   setupAnemometer(26);
-
-  if (!bmp.begin()) {
-	  Serial.println("Could not find a valid BMP085/BMP180 sensor, check wiring!");
-    bmpPresent = false;
-	}
-  else{
-    Serial.println("BMP found!");
-    bmpPresent = true;
-  }
-
-  Serial.println("Setup done");
-  //enter wifi details.
-  initWiFi(WIFI_SSID, WIFI_PASSWORD);
-  initNTP();
-
-  readSensors();
-  if(DEBUG) outputDebug();  
-
-  
-  
   
   if (!bmp.begin()) {
 	  Serial.println("Could not find a valid BMP085/BMP180 sensor, check wiring!");
@@ -148,17 +130,10 @@ void setup() {
   Serial.println("Setup done");
   //enter wifi details.
   initWiFi(WIFI_SSID, WIFI_PASSWORD);
-  initNTP();
-
+  initNTP();  
   Json testData = Json(STATION_NAME);
   //Serial.println(testData.returnJson().c_str());
-  if(WiFi.status() == WL_CONNECTED){
-    if(checkCondition(SERVER_ADDRESS)){
-      Serial.println("Server wants data");
-      sendJson(SERVER_ADDRESS, testData.returnJson().c_str());
-    }
-    else{Serial.println("Server dont want data");}
-  }
+  
 
   if(DEBUG||HAS_LCD||WiFi.status() == WL_CONNECTED){
     readSensors();
@@ -186,6 +161,14 @@ void setup() {
 
   }
   makeJson(testData);
+  if(WiFi.status() == WL_CONNECTED){
+    if(checkCondition(SERVER_ADDRESS)){
+      Serial.println("Server wants data");
+      sendJson(SERVER_ADDRESS, testData.returnJson().c_str());
+    }
+    else{Serial.println("Server dont want data");}
+  }
+
 }
   esp_sleep_enable_timer_wakeup(TIME_TO_SLEEP * uS_TO_S_FACTOR);
   Serial.println("Going to sleep now");

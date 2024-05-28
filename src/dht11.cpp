@@ -1,4 +1,4 @@
-//#include <Adafruit_Sensor.h>
+//Author: Hugo
 #include <DHT.h>
 
 #define DHTPIN 17

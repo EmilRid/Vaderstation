@@ -1,3 +1,4 @@
+//Author: Hugo
 #include <string>
 #include "json.h"
 

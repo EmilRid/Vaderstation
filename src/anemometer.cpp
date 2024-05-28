@@ -1,4 +1,5 @@
 #include "anemometer.h"
+//Author: Hugo
 int counter = 0;
 int pinNum;
 
@@ -17,5 +18,8 @@ double readRPM(int seconds){
     attachInterrupt(digitalPinToInterrupt(pinNum), sensorTriggerd, FALLING);
     delay(seconds * 1000);
     detachInterrupt(digitalPinToInterrupt(pinNum));
-    return((counter / seconds) * 60.0);
+    Serial.println("Counter");
+    Serial.println(counter);
+    double rpm = ((double)counter / (double)seconds) * 60.0;
+    return(rpm);
 }

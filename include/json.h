@@ -1,3 +1,4 @@
+//Author: Hugo
 #ifndef JSON_H
 #define JSON_H
 #include <string>
