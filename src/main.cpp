@@ -110,6 +110,9 @@ void makeJson(Json& jsonData){
     jsonData.addValue("altitude", std::to_string(altitude));
     jsonData.addValue("pressure", std::to_string(pressure));
   }
+  if(HAS_ANEMOMETER){
+    jsonData.addValue("windSpeed", std::to_string(RPM));
+  }
 }
 
 
